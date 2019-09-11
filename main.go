@@ -34,7 +34,7 @@ func main() {
 	}
 
 	if len(os.Args[1:]) > 0 && os.Args[1] == "migrate" {
-		db.AutoMigrate(&models.Slot{}, &models.User{})
+		db.AutoMigrate(&models.Slot{}, &models.User{}, &models.Transaction{})
 		log.Println("Migrate success")
 	} else {
 		r := routes.SetupRouter(db)

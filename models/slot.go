@@ -3,9 +3,10 @@ package models
 import "time"
 
 type Slot struct {
-	ID        int       `json:"id,primary_key"`
-	Name      string    `gorm:"column:name" json:"name"`
-	Status    string    `gorm:"column:status" json:"status"`
-	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
+	ID           uint          `json:"id,primary_key"`
+	Transactions []Transaction `json:"transactions"`
+	Name         string        `json:"name"`
+	Status       string        `json:"status"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
 }

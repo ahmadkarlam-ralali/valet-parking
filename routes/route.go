@@ -26,5 +26,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		slotRoute.DELETE("/:id", slot.Destroy)
 	}
 
+	transactionRoute := v1.Group("/transactions")
+	{
+		transaction := &v1Controller.TransactionsController{Db: db}
+		transactionRoute.POST("/start", transaction.Start)
+		transactionRoute.POST("/end", transaction.End)
+	}
+
 	return r
 }
