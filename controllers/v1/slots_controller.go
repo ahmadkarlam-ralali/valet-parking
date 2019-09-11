@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/ahmadkarlam-ralali/valet-parking/helpers"
 	"github.com/ahmadkarlam-ralali/valet-parking/models"
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/gin-gonic/gin"
@@ -24,17 +25,18 @@ func (this *SlotsController) GetAll(c *gin.Context) {
 func (this *SlotsController) Store(c *gin.Context) {
 	var request requests.SlotStoreRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.Abort()
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "error",
-			"message": "Wrong format",
-		})
+		helpers.HttpError(c, "Wrong Format", http.StatusBadRequest)
+		return
+	}
+
+	if request.Name == "" {
+		helpers.HttpError(c, "Field name required", http.StatusBadRequest)
 		return
 	}
 
 	this.Db.Create(&models.Slot{
-		Name:      request.Name,
-		Status:    "empty",
+		Name:   request.Name,
+		Status: "empty",
 	})
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -46,11 +48,7 @@ func (this *SlotsController) Store(c *gin.Context) {
 func (this *SlotsController) Update(c *gin.Context) {
 	var request requests.SlotUpdateRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.Abort()
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "error",
-			"message": "Wrong format",
-		})
+		helpers.HttpError(c, "Wrong Format", http.StatusBadRequest)
 		return
 	}
 
