@@ -76,3 +76,20 @@ func (this *SlotsController) Destroy(c *gin.Context) {
 		"message": "Slot deleted",
 	})
 }
+
+func (this *SlotsController) Check(c *gin.Context) {
+	var slot models.Slot
+	var count int
+	this.Db.Model(&slot).Where("status = ?", "empty").Count(&count)
+
+	message := "Current empty slot"
+	if count < 1 {
+		message = "Parking full"
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": message,
+		"data":    count,
+	})
+}
