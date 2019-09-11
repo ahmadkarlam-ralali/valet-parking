@@ -29,11 +29,6 @@ func (this *SlotsController) Store(c *gin.Context) {
 		return
 	}
 
-	if request.Name == "" {
-		helpers.HttpError(c, "Field name required", http.StatusBadRequest)
-		return
-	}
-
 	this.Db.Create(&models.Slot{
 		Name:   request.Name,
 		Status: "empty",
