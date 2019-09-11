@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ahmadkarlam-ralali/valet-parking/models"
 	"github.com/ahmadkarlam-ralali/valet-parking/routes"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -33,6 +34,7 @@ func main() {
 	}
 
 	if len(os.Args[1:]) > 0 && os.Args[1] == "migrate" {
+		db.AutoMigrate(&models.Slot{}, &models.User{})
 		log.Println("Migrate success")
 	} else {
 		r := routes.SetupRouter(db)
