@@ -1,0 +1,15 @@
+[prune]
+  go-tests = true
+  unused-packages = true
+
+[[constraint]]
+  name = "github.com/spf13/viper"
+  version = "1.4.0"
+
+[[constraint]]
+  name = "github.com/gin-gonic/gin"
+  version = "1.4.0"
+
+[[constraint]]
+  name = "github.com/jinzhu/gorm"
+  version = "1.9.10"
