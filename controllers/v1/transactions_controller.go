@@ -1,13 +1,18 @@
 package v1
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"github.com/ahmadkarlam-ralali/valet-parking/helpers"
 	"github.com/ahmadkarlam-ralali/valet-parking/models"
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/ahmadkarlam-ralali/valet-parking/responses"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"math"
 	"net/http"
+	"time"
 )
 
 type TransactionsController struct {
@@ -27,7 +32,15 @@ func (this *TransactionsController) Start(c *gin.Context) {
 		return
 	}
 
-	this.Db.Create(&models.Transaction{PlatNo: request.PlatNo, SlotId: slot.ID})
+	h := md5.New()
+	h.Write([]byte(fmt.Sprintf("%s%s%d", request.PlatNo, time.Now(), slot.ID)))
+	code := hex.EncodeToString(h.Sum(nil))
+	this.Db.Create(&models.Transaction{
+		PlatNo:  request.PlatNo,
+		SlotId:  slot.ID,
+		StartAt: time.Now(),
+		Code:    code,
+	})
 
 	slot.Status = "occupied"
 	this.Db.Model(&slot).Updates(slot)
@@ -37,7 +50,7 @@ func (this *TransactionsController) Start(c *gin.Context) {
 		"data": &responses.TransactionStartResponse{
 			PlatNo:   request.PlatNo,
 			SlotName: slot.Name,
-			SlotID:   slot.ID,
+			Code:     code,
 		},
 	})
 }
@@ -49,23 +62,19 @@ func (this *TransactionsController) End(c *gin.Context) {
 		return
 	}
 
-	var slot models.Slot
-	if result := this.Db.First(&slot, "name = ?", request.SlotName); result.Error != nil {
-		helpers.HttpError(c, "Slot Name not found", http.StatusNotFound)
-		return
-	}
-
 	var transaction models.Transaction
-	condition := "plat_no = ? and slot_id = ?"
-	if result := this.Db.First(&transaction, condition, request.PlatNo, slot.ID); result.Error != nil {
+	if result := this.Db.First(&transaction, "code = ?", request.Code); result.Error != nil {
 		helpers.HttpError(c, "Transaction not found", http.StatusNotFound)
 		return
 	}
 
-	slot.Status = "empty"
-	this.Db.Model(&slot).Updates(slot)
+	var slot models.Slot
+	this.Db.First(&slot, "id = ?", transaction.SlotId)
+	this.Db.Model(&slot).Update("status", "empty")
 
-	transaction.Total = 1500
+	transaction.EndAt = time.Now()
+	duration := transaction.EndAt.Sub(transaction.StartAt).Hours()
+	transaction.Total = uint(1500 * math.Ceil(duration))
 	this.Db.Model(&transaction).Updates(transaction)
 
 	c.JSON(http.StatusOK, gin.H{

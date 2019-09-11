@@ -3,7 +3,7 @@ package responses
 type TransactionStartResponse struct {
 	PlatNo   string `json:"plat_no"`
 	SlotName string `json:"slot_name"`
-	SlotID   uint   `json:"slot_id"`
+	Code     string `json:"code"`
 }
 
 type TransactionEndResponse struct {

@@ -5,6 +5,5 @@ type TransactionStartRequest struct {
 }
 
 type TransactionEndRequest struct {
-	SlotName string `form:"slot_name" json:"slot_name" binding:"required"`
-	PlatNo   string `form:"plat_no" json:"plat_no" binding:"required"`
+	Code string `form:"code" json:"code" binding:"required"`
 }
