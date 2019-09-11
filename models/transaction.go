@@ -9,6 +9,7 @@ type Transaction struct {
 	Employee   User
 	EmployeeId uint      `json:"employee_id"`
 	PlatNo     string    `json:"name"`
+	Total      uint      `json:"total"`
 	StartAt    string    `json:"start_at"`
 	EndAt      string    `json:"end_at"`
 	CreatedAt  time.Time `json:"created_at"`

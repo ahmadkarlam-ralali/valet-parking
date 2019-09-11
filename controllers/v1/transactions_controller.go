@@ -43,7 +43,33 @@ func (this *TransactionsController) Start(c *gin.Context) {
 }
 
 func (this *TransactionsController) End(c *gin.Context) {
+	var request requests.TransactionEndRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		helpers.HttpError(c, "Wrong Format", http.StatusBadRequest)
+		return
+	}
+
+	var slot models.Slot
+	if result := this.Db.First(&slot, "name = ?", request.SlotName); result.Error != nil {
+		helpers.HttpError(c, "Slot Name not found", http.StatusNotFound)
+		return
+	}
+
+	var transaction models.Transaction
+	condition := "plat_no = ? and slot_id = ?"
+	if result := this.Db.First(&transaction, condition, request.PlatNo, slot.ID); result.Error != nil {
+		helpers.HttpError(c, "Transaction not found", http.StatusNotFound)
+		return
+	}
+
+	slot.Status = "empty"
+	this.Db.Model(&slot).Updates(slot)
+
+	transaction.Total = 1500
+	this.Db.Model(&transaction).Updates(transaction)
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
+		"data":   &responses.TransactionEndResponse{Total: transaction.Total},
 	})
 }
