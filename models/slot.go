@@ -4,6 +4,7 @@ import "time"
 
 type Slot struct {
 	ID           uint          `json:"id,primary_key"`
+	BuildingID   uint          `json:"building_id"`
 	Transactions []Transaction `json:"transactions"`
 	Name         string        `json:"name"`
 	Status       string        `json:"status"`

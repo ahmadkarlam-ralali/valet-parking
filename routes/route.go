@@ -2,6 +2,7 @@ package routes
 
 import (
 	v1Controller "github.com/ahmadkarlam-ralali/valet-parking/controllers/v1"
+	"github.com/ahmadkarlam-ralali/valet-parking/middlewares"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -13,12 +14,23 @@ import (
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
+	r.Use(middlewares.CORSMiddleware())
+
 	// Ping test
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
 
 	v1 := r.Group("/api/v1")
+
+	buildingRoute := v1.Group("/buildings")
+	{
+		controller := &v1Controller.BuildingsController{Db: db}
+		buildingRoute.GET("/", controller.GetAll)
+		buildingRoute.POST("/", controller.Store)
+		buildingRoute.PUT("/:id", controller.Update)
+		buildingRoute.DELETE("/:id", controller.Destroy)
+	}
 
 	slotRoute := v1.Group("/slots")
 	{

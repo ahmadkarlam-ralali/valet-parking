@@ -26,7 +26,7 @@ func main() {
 	docs.SwaggerInfo.Description = "Valet Parking API"
 	docs.SwaggerInfo.Version = "0.1"
 	docs.SwaggerInfo.Host = ""
-	docs.SwaggerInfo.BasePath = ""
+	docs.SwaggerInfo.BasePath = "/api/v1/"
 	docs.SwaggerInfo.Host = "192.168.40.94:9000"
 
 	dbHostname := viper.GetString("database.hostname")
@@ -43,7 +43,7 @@ func main() {
 	}
 
 	if len(os.Args[1:]) > 0 && os.Args[1] == "migrate" {
-		db.AutoMigrate(&models.Slot{}, &models.User{}, &models.Transaction{})
+		db.AutoMigrate(&models.Slot{}, &models.User{}, &models.Transaction{}, &models.Building{})
 		log.Println("Migrate success")
 	} else {
 		r := routes.SetupRouter(db)
