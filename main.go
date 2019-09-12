@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ahmadkarlam-ralali/valet-parking/docs"
 	"github.com/ahmadkarlam-ralali/valet-parking/models"
 	"github.com/ahmadkarlam-ralali/valet-parking/routes"
 	_ "github.com/go-sql-driver/mysql"
@@ -20,6 +21,14 @@ func init() {
 }
 
 func main() {
+	// programatically set swagger info
+	docs.SwaggerInfo.Title = "Swagger Agent API"
+	docs.SwaggerInfo.Description = "Valet Parking API"
+	docs.SwaggerInfo.Version = "0.1"
+	docs.SwaggerInfo.Host = ""
+	docs.SwaggerInfo.BasePath = ""
+	docs.SwaggerInfo.Host = "192.168.40.94:9000"
+
 	dbHostname := viper.GetString("database.hostname")
 	dbUsername := viper.GetString("database.username")
 	dbPassword := viper.GetString("database.password")

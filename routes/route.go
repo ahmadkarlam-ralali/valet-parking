@@ -5,6 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
@@ -34,6 +37,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		transactionRoute.POST("/start", transaction.Start)
 		transactionRoute.POST("/end", transaction.End)
 	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
 }

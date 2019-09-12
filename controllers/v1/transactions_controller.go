@@ -19,6 +19,17 @@ type TransactionsController struct {
 	Db *gorm.DB
 }
 
+// StartParking godoc
+// @Summary Start Parking
+// @Description start parking
+// @Tags Transaction
+// @Accept  json
+// @Produce  json
+// @Param request body requests.TransactionStartRequest true "Plat Number"
+// @Success 200 {string} string "Ok"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /transaction/start [post]
 func (this *TransactionsController) Start(c *gin.Context) {
 	var request requests.TransactionStartRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -55,6 +66,17 @@ func (this *TransactionsController) Start(c *gin.Context) {
 	})
 }
 
+// EndParking godoc
+// @Summary End Parking
+// @Description end parking
+// @Tags Transaction
+// @Accept  json
+// @Produce  json
+// @Param request body requests.TransactionEndRequest true "Request Body"
+// @Success 200 {string} string "Ok"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /transaction/end [post]
 func (this *TransactionsController) End(c *gin.Context) {
 	var request requests.TransactionEndRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
