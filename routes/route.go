@@ -33,6 +33,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	}
 
 	slotRoute := v1.Group("/slots")
+	slotRoute.Use(middlewares.Authenticate(db))
 	{
 		slot := &v1Controller.SlotsController{Db: db}
 		slotRoute.GET("/", slot.GetAll)
@@ -48,6 +49,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		transaction := &v1Controller.TransactionsController{Db: db}
 		transactionRoute.POST("/start", transaction.Start)
 		transactionRoute.POST("/end", transaction.End)
+	}
+
+	authRoute := v1.Group("/auth")
+	{
+		auth := &v1Controller.AuthController{Db: db}
+		authRoute.POST("/login", auth.Login)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
