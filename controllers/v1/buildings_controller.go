@@ -80,7 +80,7 @@ func (this *BuildingsController) Update(c *gin.Context) {
 	}
 
 	var building models.Building
-	this.Db.First(&building, "id = ?", c.Param("id"))
+	this.Db.First(&building, "id = ?", c.Param("buildingID"))
 	building.Name = request.Name
 	this.Db.Model(&building).Updates(building)
 
@@ -101,7 +101,7 @@ func (this *BuildingsController) Update(c *gin.Context) {
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /buildings/{buildingID} [delete]
 func (this *BuildingsController) Destroy(c *gin.Context) {
-	this.Db.Delete(&models.Building{}, "id = ?", c.Param("id"))
+	this.Db.Delete(&models.Building{}, "id = ?", c.Param("buildingID"))
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
