@@ -17,6 +17,16 @@ type AuthController struct {
 	Db *gorm.DB
 }
 
+// Login godoc
+// @Summary Login 
+// @Description Login : Username : admin; Password : admin
+// @Tags Auth
+// @Accept  json
+// @Produce  json
+// @Param request body requests.AuthLoginRequest true "Request Body"
+// @Success 200 {string} string "Ok"
+// @Failure 404 {string} string "Unauthorized"
+// @Router /auth/login [post]
 func (this *AuthController) Login(c *gin.Context) {
 	var request requests.AuthLoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
