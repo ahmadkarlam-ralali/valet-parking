@@ -2,18 +2,16 @@ package v1
 
 import (
 	"github.com/ahmadkarlam-ralali/valet-parking/helpers"
-	"github.com/ahmadkarlam-ralali/valet-parking/models"
 	"github.com/ahmadkarlam-ralali/valet-parking/repository"
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"net/http"
 	"strconv"
 )
 
 type SlotsController struct {
-	Db             *gorm.DB
-	SlotRepository repository.SlotRepository
+	BuildingRepository repository.BuildingRepository
+	SlotRepository     repository.SlotRepository
 }
 
 // List Slot by Building godoc
@@ -58,16 +56,13 @@ func (this *SlotsController) Store(c *gin.Context) {
 	}
 
 	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
-	if result := this.Db.First(&models.Building{}, "id = ?", uint(buildingId)); result.Error != nil {
+	_, err := this.BuildingRepository.Get(uint(buildingId))
+	if err != nil {
 		helpers.HttpError(c, "Building not found", http.StatusNotFound)
 		return
 	}
 
-	this.Db.Create(&models.Slot{
-		Name:       request.Name,
-		BuildingID: uint(buildingId),
-		Total:      request.Total,
-	})
+	this.SlotRepository.Create(uint(buildingId), request)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",

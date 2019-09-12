@@ -2,15 +2,15 @@ package v1
 
 import (
 	"github.com/ahmadkarlam-ralali/valet-parking/helpers"
-	"github.com/ahmadkarlam-ralali/valet-parking/models"
+	"github.com/ahmadkarlam-ralali/valet-parking/repository"
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"net/http"
+	"strconv"
 )
 
 type BuildingsController struct {
-	Db *gorm.DB
+	BuildingRepository repository.BuildingRepository
 }
 
 // List Buildings godoc
@@ -24,8 +24,7 @@ type BuildingsController struct {
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /buildings [get]
 func (this *BuildingsController) GetAll(c *gin.Context) {
-	var buildings []models.Building
-	this.Db.Find(&buildings)
+	buildings := this.BuildingRepository.GetAll()
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data":   buildings,
@@ -50,9 +49,7 @@ func (this *BuildingsController) Store(c *gin.Context) {
 		return
 	}
 
-	this.Db.Create(&models.Building{
-		Name: request.Name,
-	})
+	this.BuildingRepository.Create(request)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
@@ -79,10 +76,8 @@ func (this *BuildingsController) Update(c *gin.Context) {
 		return
 	}
 
-	var building models.Building
-	this.Db.First(&building, "id = ?", c.Param("buildingID"))
-	building.Name = request.Name
-	this.Db.Model(&building).Updates(building)
+	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
+	this.BuildingRepository.Update(uint(buildingId), request)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
@@ -101,7 +96,8 @@ func (this *BuildingsController) Update(c *gin.Context) {
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /buildings/{buildingID} [delete]
 func (this *BuildingsController) Destroy(c *gin.Context) {
-	this.Db.Delete(&models.Building{}, "id = ?", c.Param("buildingID"))
+	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
+	this.BuildingRepository.Delete(uint(buildingId))
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",

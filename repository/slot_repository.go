@@ -22,6 +22,14 @@ func (repository *SlotRepository) Get(slotID uint) (models.Slot, error) {
 	return slot, result.Error
 }
 
+func (repository *SlotRepository) Create(buildingID uint, request requests.SlotStoreRequest) {
+	repository.Db.Create(&models.Slot{
+		Name:       request.Name,
+		BuildingID: buildingID,
+		Total:      request.Total,
+	})
+}
+
 func (repository *SlotRepository) Update(slot models.Slot, request requests.SlotUpdateRequest) {
 	slot.Name = request.Name
 	slot.Total = request.Total

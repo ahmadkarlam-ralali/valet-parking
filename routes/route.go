@@ -27,7 +27,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	buildingRoute := v1.Group("/buildings")
 	buildingRoute.Use(middlewares.Authenticate(db))
 	{
-		controller := &v1Controller.BuildingsController{Db: db}
+		controller := &v1Controller.BuildingsController{
+			BuildingRepository: repository.BuildingRepository{Db: db},
+		}
 		buildingRoute.GET("/", controller.GetAll)
 		buildingRoute.POST("/", controller.Store)
 		buildingRoute.PUT("/:buildingID", controller.Update)
@@ -36,8 +38,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		slotRoute := buildingRoute.Group("/:buildingID/slots")
 		{
 			slot := &v1Controller.SlotsController{
-				Db:             db,
-				SlotRepository: repository.SlotRepository{Db: db},
+				BuildingRepository: repository.BuildingRepository{Db: db},
+				SlotRepository:     repository.SlotRepository{Db: db},
 			}
 			slotRoute.GET("/", slot.GetAll)
 			slotRoute.POST("/", slot.Store)
