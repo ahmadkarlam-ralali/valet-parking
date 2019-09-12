@@ -129,7 +129,7 @@ func (this *TransactionsController) End(c *gin.Context) {
 
 	transaction.EndAt = time.Now()
 	duration := transaction.EndAt.Sub(transaction.StartAt).Hours()
-	transaction.Total = uint(1500 * math.Ceil(duration))
+	transaction.Total = int(1500 * math.Ceil(duration))
 	this.Db.Model(&transaction).Updates(transaction)
 
 	c.JSON(http.StatusOK, gin.H{

@@ -12,6 +12,10 @@ import (
 	"os"
 )
 
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
 func init() {
 	viper.SetConfigFile("config.json")
 	err := viper.ReadInConfig()

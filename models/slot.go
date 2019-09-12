@@ -7,7 +7,7 @@ type Slot struct {
 	BuildingID   uint          `json:"building_id"`
 	Transactions []Transaction `json:"transactions"`
 	Name         string        `json:"name"`
-	Total        uint          `json:"total"`
+	Total        int           `json:"total"`
 	CreatedAt    time.Time     `json:"created_at"`
 	UpdatedAt    time.Time     `json:"updated_at"`
 }

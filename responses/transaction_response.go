@@ -7,5 +7,5 @@ type TransactionStartResponse struct {
 }
 
 type TransactionEndResponse struct {
-	Total uint `json:"total"`
+	Total int `json:"total"`
 }

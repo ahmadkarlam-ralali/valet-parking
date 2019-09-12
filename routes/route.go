@@ -3,6 +3,7 @@ package routes
 import (
 	v1Controller "github.com/ahmadkarlam-ralali/valet-parking/controllers/v1"
 	"github.com/ahmadkarlam-ralali/valet-parking/middlewares"
+	"github.com/ahmadkarlam-ralali/valet-parking/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -34,7 +35,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 		slotRoute := buildingRoute.Group("/:buildingID/slots")
 		{
-			slot := &v1Controller.SlotsController{Db: db}
+			slot := &v1Controller.SlotsController{
+				Db:             db,
+				SlotRepository: repository.SlotRepository{Db: db},
+			}
 			slotRoute.GET("/", slot.GetAll)
 			slotRoute.POST("/", slot.Store)
 			slotRoute.PUT("/:slotID", slot.Update)

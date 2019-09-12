@@ -8,7 +8,7 @@ type Transaction struct {
 	Slot      Slot
 	SlotId    uint      `json:"slot_id"`
 	PlatNo    string    `json:"name"`
-	Total     uint      `json:"total"`
+	Total     int       `json:"total"`
 	StartAt   time.Time `json:"start_at"`
 	EndAt     time.Time `json:"end_at"`
 	CreatedAt time.Time `json:"created_at"`

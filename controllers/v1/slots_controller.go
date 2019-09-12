@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/ahmadkarlam-ralali/valet-parking/helpers"
 	"github.com/ahmadkarlam-ralali/valet-parking/models"
+	"github.com/ahmadkarlam-ralali/valet-parking/repository"
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -11,7 +12,8 @@ import (
 )
 
 type SlotsController struct {
-	Db *gorm.DB
+	Db             *gorm.DB
+	SlotRepository repository.SlotRepository
 }
 
 // List Slot by Building godoc
@@ -20,14 +22,15 @@ type SlotsController struct {
 // @Tags Slot
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param buildingID path string true "Building ID" default(1)
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /buildings/{buildingID}/slots [get]
 func (this *SlotsController) GetAll(c *gin.Context) {
-	var slots []models.Slot
-	this.Db.Find(&slots, "building_id = ?", c.Param("buildingID"))
+	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
+	slots := this.SlotRepository.All(uint(buildingID))
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data":   slots,
@@ -93,26 +96,21 @@ func (this *SlotsController) Update(c *gin.Context) {
 		return
 	}
 
-	var slot models.Slot
-	if result := this.Db.First(&slot, "id = ?", c.Param("slotID")); result.Error != nil {
+	slotID, _ := strconv.Atoi(c.Param("slotID"))
+	slot, err := this.SlotRepository.Get(uint(slotID))
+	if err != nil {
 		helpers.HttpError(c, "Building not found", http.StatusNotFound)
 		return
 	}
 
-	var count uint
-	this.Db.Model(&models.Transaction{}).
-		Where("slot_id = ? and end_at = '0000-00-00 00:00:00'", slot.ID).
-		Count(&count)
-
+	count := this.SlotRepository.GetTotalSlotOccupied(uint(slotID))
 	if request.Total < count {
 		message := "Slot currently used"
 		helpers.HttpError(c, message, http.StatusBadRequest)
 		return
 	}
 
-	slot.Name = request.Name
-	slot.Total = request.Total
-	this.Db.Model(&slot).Updates(slot)
+	this.SlotRepository.Update(slot, request)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
@@ -133,7 +131,9 @@ func (this *SlotsController) Update(c *gin.Context) {
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /buildings/{buildingID}/slots/{slotID} [delete]
 func (this *SlotsController) Destroy(c *gin.Context) {
-	this.Db.Delete(&models.Slot{}, "id = ? and building_id = ?", c.Param("slotID"), c.Param("buildingID"))
+	slotID, _ := strconv.Atoi(c.Param("slotID"))
+	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
+	this.SlotRepository.DeleteByBuildingId(uint(slotID), uint(buildingID))
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
@@ -153,22 +153,11 @@ func (this *SlotsController) Destroy(c *gin.Context) {
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /buildings/{buildingID}/slots/check [get]
 func (this *SlotsController) Check(c *gin.Context) {
-	type TotalData struct{ Total uint }
-	var sumSlot TotalData
-	var countTransaction TotalData
-	this.Db.Table("slots").
-		Select("sum(total) as total").
-		Where("building_id = ?", c.Param("buildingID")).
-		Scan(&sumSlot)
-	this.Db.Table("slots").
-		Select("count(plat_no) as total").
-		Joins("left join transactions on transactions.slot_id = slots.id").
-		Where("building_id = ? and end_at = '0000-00-00 00:00:00'", c.Param("buildingID")).
-		Scan(&countTransaction)
+	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
+	remaining := this.SlotRepository.GetRemainingSlotByBuildingId(uint(buildingID))
 
-	count := sumSlot.Total - countTransaction.Total
 	message := "Current empty slot"
-	if count < 1 {
+	if remaining < 1 {
 		message = "Parking full"
 	}
 
@@ -176,7 +165,7 @@ func (this *SlotsController) Check(c *gin.Context) {
 		"status":  "success",
 		"message": message,
 		"data": gin.H{
-			"left": count,
+			"remaining": remaining,
 		},
 	})
 }
