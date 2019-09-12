@@ -6,7 +6,6 @@ import (
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -166,8 +165,6 @@ func (this *SlotsController) Check(c *gin.Context) {
 		Joins("left join transactions on transactions.slot_id = slots.id").
 		Where("building_id = ? and end_at = '0000-00-00 00:00:00'", c.Param("buildingID")).
 		Scan(&countTransaction)
-
-	log.Println(sumSlot.Total, countTransaction.Total)
 
 	count := sumSlot.Total - countTransaction.Total
 	message := "Current empty slot"

@@ -10,6 +10,7 @@ import (
 	"github.com/ahmadkarlam-ralali/valet-parking/responses"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"log"
 	"math"
 	"net/http"
 	"time"
@@ -29,7 +30,7 @@ type TransactionsController struct {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /transaction/start [post]
+// @Router /transactions/start [post]
 func (this *TransactionsController) Start(c *gin.Context) {
 	var request requests.TransactionStartRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -37,30 +38,66 @@ func (this *TransactionsController) Start(c *gin.Context) {
 		return
 	}
 
-	var slot models.Slot
-	if result := this.Db.First(&slot, "status = 'empty'"); result.Error != nil {
+	type TotalData struct{ Total int }
+	var sumSlot TotalData
+	var countTransaction TotalData
+	this.Db.Table("slots").
+		Select("sum(total) as total").
+		Where("building_id = ?", request.BuildingID).
+		Scan(&sumSlot)
+	this.Db.Table("slots").
+		Select("count(plat_no) as total").
+		Joins("left join transactions on transactions.slot_id = slots.id").
+		Where("building_id = ? and end_at = '0000-00-00 00:00:00'", request.BuildingID).
+		Scan(&countTransaction)
+
+	count := sumSlot.Total - countTransaction.Total
+	if count < 1 {
 		helpers.HttpError(c, "Parking full", http.StatusBadRequest)
 		return
 	}
 
+	type Parking struct {
+		SlotID         uint
+		SlotName       string
+		TotalParking   int
+		TotalAvailable int
+	}
+	rows, _ := this.Db.Raw("select "+
+		"s.id as slot_id, s.name as slot_name, "+
+		"(select count(*) from transactions t where end_at = '0000-00-00 00:00:00' and t.slot_id = s.id) as total_parking, "+
+		"s.total as total_available from slots s where building_id = ?", request.BuildingID).
+		Rows()
+
+	var parking Parking
+	for rows.Next() {
+		err := rows.Scan(&parking.SlotID, &parking.SlotName, &parking.TotalParking, &parking.TotalAvailable)
+		if err != nil {
+			log.Println(err)
+			helpers.HttpError(c, "Something when wrong", http.StatusInternalServerError)
+			return
+		}
+
+		if parking.TotalParking < parking.TotalAvailable {
+			break
+		}
+	}
+
 	h := md5.New()
-	h.Write([]byte(fmt.Sprintf("%s%s%d", request.PlatNo, time.Now(), slot.ID)))
+	h.Write([]byte(fmt.Sprintf("%s%s%d", request.PlatNo, time.Now(), parking.SlotID)))
 	code := hex.EncodeToString(h.Sum(nil))
 	this.Db.Create(&models.Transaction{
 		PlatNo:  request.PlatNo,
-		SlotId:  slot.ID,
+		SlotId:  parking.SlotID,
 		StartAt: time.Now(),
 		Code:    code,
 	})
-
-	slot.Status = "occupied"
-	this.Db.Model(&slot).Updates(slot)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data": &responses.TransactionStartResponse{
 			PlatNo:   request.PlatNo,
-			SlotName: slot.Name,
+			SlotName: parking.SlotName,
 			Code:     code,
 		},
 	})
@@ -76,7 +113,7 @@ func (this *TransactionsController) Start(c *gin.Context) {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /transaction/end [post]
+// @Router /transactions/end [post]
 func (this *TransactionsController) End(c *gin.Context) {
 	var request requests.TransactionEndRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -89,10 +126,6 @@ func (this *TransactionsController) End(c *gin.Context) {
 		helpers.HttpError(c, "Transaction not found", http.StatusNotFound)
 		return
 	}
-
-	var slot models.Slot
-	this.Db.First(&slot, "id = ?", transaction.SlotId)
-	this.Db.Model(&slot).Update("status", "empty")
 
 	transaction.EndAt = time.Now()
 	duration := transaction.EndAt.Sub(transaction.StartAt).Hours()
