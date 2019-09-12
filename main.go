@@ -31,7 +31,7 @@ func main() {
 	docs.SwaggerInfo.Version = "0.1"
 	docs.SwaggerInfo.Host = ""
 	docs.SwaggerInfo.BasePath = "/api/v1/"
-	docs.SwaggerInfo.Host = "192.168.40.94:9000"
+	docs.SwaggerInfo.Host = "localhost:9000"
 
 	dbHostname := viper.GetString("database.hostname")
 	dbUsername := viper.GetString("database.username")

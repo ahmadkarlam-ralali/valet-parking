@@ -1,23 +1,17 @@
 package v1
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"fmt"
 	"github.com/ahmadkarlam-ralali/valet-parking/helpers"
-	"github.com/ahmadkarlam-ralali/valet-parking/models"
+	"github.com/ahmadkarlam-ralali/valet-parking/repository"
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/ahmadkarlam-ralali/valet-parking/responses"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	"log"
-	"math"
 	"net/http"
-	"time"
 )
 
 type TransactionsController struct {
-	Db *gorm.DB
+	SlotRepository    repository.SlotRepository
+	ParkingRepository repository.ParkingRepository
 }
 
 // StartParking godoc
@@ -38,67 +32,22 @@ func (this *TransactionsController) Start(c *gin.Context) {
 		return
 	}
 
-	type TotalData struct{ Total int }
-	var sumSlot TotalData
-	var countTransaction TotalData
-	this.Db.Table("slots").
-		Select("sum(total) as total").
-		Where("building_id = ?", request.BuildingID).
-		Scan(&sumSlot)
-	this.Db.Table("slots").
-		Select("count(plat_no) as total").
-		Joins("left join transactions on transactions.slot_id = slots.id").
-		Where("building_id = ? and end_at = '0000-00-00 00:00:00'", request.BuildingID).
-		Scan(&countTransaction)
-
-	count := sumSlot.Total - countTransaction.Total
+	count := this.SlotRepository.GetRemainingSlotByBuildingId(request.BuildingID)
 	if count < 1 {
 		helpers.HttpError(c, "Parking full", http.StatusBadRequest)
 		return
 	}
 
-	type Parking struct {
-		SlotID         uint
-		SlotName       string
-		TotalParking   int
-		TotalAvailable int
-	}
-	rows, _ := this.Db.Raw("select "+
-		"s.id as slot_id, s.name as slot_name, "+
-		"(select count(*) from transactions t where end_at = '0000-00-00 00:00:00' and t.slot_id = s.id) as total_parking, "+
-		"s.total as total_available from slots s where building_id = ?", request.BuildingID).
-		Rows()
+	parking := this.ParkingRepository.SearchParkingPlace(request.BuildingID)
 
-	var parking Parking
-	for rows.Next() {
-		err := rows.Scan(&parking.SlotID, &parking.SlotName, &parking.TotalParking, &parking.TotalAvailable)
-		if err != nil {
-			log.Println(err)
-			helpers.HttpError(c, "Something when wrong", http.StatusInternalServerError)
-			return
-		}
-
-		if parking.TotalParking < parking.TotalAvailable {
-			break
-		}
-	}
-
-	h := md5.New()
-	h.Write([]byte(fmt.Sprintf("%s%s%d", request.PlatNo, time.Now(), parking.SlotID)))
-	code := hex.EncodeToString(h.Sum(nil))
-	this.Db.Create(&models.Transaction{
-		PlatNo:  request.PlatNo,
-		SlotId:  parking.SlotID,
-		StartAt: time.Now(),
-		Code:    code,
-	})
+	transaction := this.ParkingRepository.Create(request, parking)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data": &responses.TransactionStartResponse{
-			PlatNo:   request.PlatNo,
+			PlatNo:   transaction.PlatNo,
 			SlotName: parking.SlotName,
-			Code:     code,
+			Code:     transaction.Code,
 		},
 	})
 }
@@ -121,16 +70,13 @@ func (this *TransactionsController) End(c *gin.Context) {
 		return
 	}
 
-	var transaction models.Transaction
-	if result := this.Db.First(&transaction, "code = ?", request.Code); result.Error != nil {
+	transaction, err := this.ParkingRepository.GetByCode(request.Code)
+	if err != nil {
 		helpers.HttpError(c, "Transaction not found", http.StatusNotFound)
 		return
 	}
 
-	transaction.EndAt = time.Now()
-	duration := transaction.EndAt.Sub(transaction.StartAt).Hours()
-	transaction.Total = int(1500 * math.Ceil(duration))
-	this.Db.Model(&transaction).Updates(transaction)
+	transaction = this.ParkingRepository.EndParking(transaction)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",

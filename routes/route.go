@@ -52,7 +52,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	transactionRoute := v1.Group("/transactions")
 	{
-		transaction := &v1Controller.TransactionsController{Db: db}
+		transaction := &v1Controller.TransactionsController{
+			SlotRepository:    repository.SlotRepository{Db: db},
+			ParkingRepository: repository.ParkingRepository{Db: db},
+		}
 		transactionRoute.POST("/start", transaction.Start)
 		transactionRoute.POST("/end", transaction.End)
 	}
