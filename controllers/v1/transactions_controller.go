@@ -25,7 +25,7 @@ type TransactionsController struct {
 // @Tags Transaction
 // @Accept  json
 // @Produce  json
-// @Param request body requests.TransactionStartRequest true "Plat Number"
+// @Param request body requests.TransactionStartRequest true "Request Body"
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
