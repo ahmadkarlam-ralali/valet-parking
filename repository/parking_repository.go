@@ -30,7 +30,7 @@ type ParkingRepository struct {
 
 func (repository *ParkingRepository) GetAll() []models.Transaction {
 	var transactions []models.Transaction
-	repository.Db.Preload("Slot").Find(&transactions)
+	repository.Db.Preload("Slot.Building").Find(&transactions)
 	return transactions
 }
 

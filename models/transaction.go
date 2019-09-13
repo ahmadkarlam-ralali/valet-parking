@@ -3,9 +3,9 @@ package models
 import "time"
 
 type Transaction struct {
-	ID        uint   `json:"id,primary_key"`
-	Code      string `json:"code"`
-	Slot      Slot
+	ID        uint      `json:"id,primary_key"`
+	Code      string    `json:"code"`
+	Slot      Slot      `json:"slot"`
 	SlotId    uint      `json:"slot_id"`
 	PlatNo    string    `json:"name"`
 	Total     int       `json:"total"`
