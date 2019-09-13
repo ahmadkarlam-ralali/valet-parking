@@ -72,6 +72,35 @@ func (this *SlotsController) Store(c *gin.Context) {
 	})
 }
 
+// Show Slot by Building godoc
+// @Summary Show Slot by Building
+// @Description show slot by building
+// @Tags Slot
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param buildingID path string true "Building ID" default(1)
+// @Param slotID path string true "Slot ID" default(1)
+// @Success 200 {string} string "Ok"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 404 {string} string "Not Found"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /buildings/{buildingID}/slots/{slotID}/ [get]
+func (this *SlotsController) Show(c *gin.Context) {
+	slotID, _ := strconv.Atoi(c.Param("slotID"))
+	slot, err := this.SlotRepository.Get(uint(slotID))
+	if err != nil {
+		helpers.HttpError(c, "Slot not found", http.StatusNotFound)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Slot updated",
+		"data":    slot,
+	})
+}
+
 // Update Slot by Building godoc
 // @Summary Update Slot by Building
 // @Description update slot by building
@@ -158,7 +187,7 @@ func (this *SlotsController) Destroy(c *gin.Context) {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID}/slots/check/ [get]
+// @Router /buildings/{buildingID}/check/ [get]
 func (this *SlotsController) Check(c *gin.Context) {
 	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
 	remaining := this.SlotRepository.GetRemainingSlotByBuildingId(uint(buildingID))

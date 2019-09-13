@@ -50,7 +50,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	// Without Authentication
 	v1.GET("/buildings", buildingController.GetAll)
-	v1.GET("/buildings/:buildingID/slots/check", slot.Check)
+	v1.GET("/buildings/:buildingID/check", slot.Check)
 	v1.POST("/transactions/start", transaction.Start)
 	v1.POST("/transactions/end", transaction.End)
 
@@ -64,6 +64,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 		v1.GET("/buildings/:buildingID/slots", slot.GetAll)
 		v1.POST("/buildings/:buildingID/slots", slot.Store)
+		v1.GET("/buildings/:buildingID/slots/:slotID", slot.Show)
 		v1.PUT("/buildings/:buildingID/slots/:slotID", slot.Update)
 		v1.DELETE("/buildings/:buildingID/slots/:slotID", slot.Destroy)
 
