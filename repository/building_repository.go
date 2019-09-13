@@ -43,6 +43,14 @@ func (repository *BuildingRepository) Update(buildingID uint, request requests.B
 	var count int
 	repository.Db.
 		Model(&models.Building{}).
+		Where("id = ?", buildingID).
+		Count(&count)
+	if count == 0 {
+		return models.Building{}, errors.New("building not found")
+	}
+
+	repository.Db.
+		Model(&models.Building{}).
 		Where("name = ? and id <> ?", request.Name, buildingID).
 		Count(&count)
 	if count > 0 {
@@ -56,6 +64,16 @@ func (repository *BuildingRepository) Update(buildingID uint, request requests.B
 	return building, nil
 }
 
-func (repository *BuildingRepository) Delete(buildingID uint) {
+func (repository *BuildingRepository) Delete(buildingID uint) error {
+	var count int
+	repository.Db.
+		Model(&models.Building{}).
+		Where("id = ?", buildingID).
+		Count(&count)
+	if count == 0 {
+		return errors.New("building not found")
+	}
+
 	repository.Db.Delete(&models.Building{}, "id = ?", buildingID)
+	return nil
 }

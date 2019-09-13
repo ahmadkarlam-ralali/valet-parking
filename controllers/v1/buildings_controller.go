@@ -132,7 +132,11 @@ func (this *BuildingsController) Update(c *gin.Context) {
 // @Router /buildings/{buildingID}/ [delete]
 func (this *BuildingsController) Destroy(c *gin.Context) {
 	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
-	this.BuildingRepository.Delete(uint(buildingId))
+	err := this.BuildingRepository.Delete(uint(buildingId))
+	if err != nil {
+		helpers.HttpError(c, err.Error(), http.StatusNotFound)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
