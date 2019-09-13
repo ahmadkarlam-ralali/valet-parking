@@ -26,7 +26,7 @@ type AuthController struct {
 // @Param request body requests.AuthLoginRequest true "Request Body"
 // @Success 200 {string} string "Ok"
 // @Failure 404 {string} string "Unauthorized"
-// @Router /auth/login [post]
+// @Router /auth/login/ [post]
 func (this *AuthController) Login(c *gin.Context) {
 	var request requests.AuthLoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

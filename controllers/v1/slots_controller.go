@@ -25,7 +25,7 @@ type SlotsController struct {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID}/slots [get]
+// @Router /buildings/{buildingID}/slots/ [get]
 func (this *SlotsController) GetAll(c *gin.Context) {
 	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
 	slots := this.SlotRepository.All(uint(buildingID))
@@ -47,7 +47,7 @@ func (this *SlotsController) GetAll(c *gin.Context) {
 // @Failure 400 {string} string "Bad Request"
 // @Failure 404 {string} string "Not Found"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID}/slots [post]
+// @Router /buildings/{buildingID}/slots/ [post]
 func (this *SlotsController) Store(c *gin.Context) {
 	var request requests.SlotStoreRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -83,7 +83,7 @@ func (this *SlotsController) Store(c *gin.Context) {
 // @Failure 400 {string} string "Bad Request"
 // @Failure 404 {string} string "Not Found"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID}/slots/{slotID} [put]
+// @Router /buildings/{buildingID}/slots/{slotID}/ [put]
 func (this *SlotsController) Update(c *gin.Context) {
 	var request requests.SlotUpdateRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -124,7 +124,7 @@ func (this *SlotsController) Update(c *gin.Context) {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID}/slots/{slotID} [delete]
+// @Router /buildings/{buildingID}/slots/{slotID}/ [delete]
 func (this *SlotsController) Destroy(c *gin.Context) {
 	slotID, _ := strconv.Atoi(c.Param("slotID"))
 	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
@@ -146,7 +146,7 @@ func (this *SlotsController) Destroy(c *gin.Context) {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID}/slots/check [get]
+// @Router /buildings/{buildingID}/slots/check/ [get]
 func (this *SlotsController) Check(c *gin.Context) {
 	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
 	remaining := this.SlotRepository.GetRemainingSlotByBuildingId(uint(buildingID))

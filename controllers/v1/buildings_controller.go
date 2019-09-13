@@ -22,7 +22,7 @@ type BuildingsController struct {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings [get]
+// @Router /buildings/ [get]
 func (this *BuildingsController) GetAll(c *gin.Context) {
 	buildings := this.BuildingRepository.GetAll()
 	c.JSON(http.StatusOK, gin.H{
@@ -41,7 +41,7 @@ func (this *BuildingsController) GetAll(c *gin.Context) {
 // @Success 201 {string} string "Created"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings [post]
+// @Router /buildings/ [post]
 func (this *BuildingsController) Store(c *gin.Context) {
 	var request requests.BuildingStoreRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -68,7 +68,7 @@ func (this *BuildingsController) Store(c *gin.Context) {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID} [put]
+// @Router /buildings/{buildingID}/ [put]
 func (this *BuildingsController) Update(c *gin.Context) {
 	var request requests.BuildingUpdateRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -94,7 +94,7 @@ func (this *BuildingsController) Update(c *gin.Context) {
 // @Param buildingID path string true "Building ID" default(11)
 // @Success 200 {string} string "Ok"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /buildings/{buildingID} [delete]
+// @Router /buildings/{buildingID}/ [delete]
 func (this *BuildingsController) Destroy(c *gin.Context) {
 	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
 	this.BuildingRepository.Delete(uint(buildingId))

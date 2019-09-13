@@ -24,7 +24,7 @@ type TransactionsController struct {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /transactions/start [post]
+// @Router /transactions/start/ [post]
 func (this *TransactionsController) Start(c *gin.Context) {
 	var request requests.TransactionStartRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -62,7 +62,7 @@ func (this *TransactionsController) Start(c *gin.Context) {
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
-// @Router /transactions/end [post]
+// @Router /transactions/end/ [post]
 func (this *TransactionsController) End(c *gin.Context) {
 	var request requests.TransactionEndRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
