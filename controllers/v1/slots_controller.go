@@ -41,6 +41,7 @@ func (this *SlotsController) GetAll(c *gin.Context) {
 // @Tags Slot
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param request body requests.SlotStoreRequest true "Request Body"
 // @Param buildingID path string true "Building ID" default(1)
 // @Success 200 {string} string "Ok"
@@ -76,6 +77,7 @@ func (this *SlotsController) Store(c *gin.Context) {
 // @Tags Slot
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param request body requests.SlotUpdateRequest true "Request Body"
 // @Param buildingID path string true "Building ID" default(1)
 // @Param slotID path string true "Slot ID" default(1)
@@ -119,6 +121,7 @@ func (this *SlotsController) Update(c *gin.Context) {
 // @Tags Slot
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param buildingID path string true "Building ID" default(1)
 // @Param slotID path string true "Slot ID" default(1)
 // @Success 200 {string} string "Ok"
@@ -142,6 +145,7 @@ func (this *SlotsController) Destroy(c *gin.Context) {
 // @Tags Slot
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param buildingID path string true "Building ID" default(1)
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"

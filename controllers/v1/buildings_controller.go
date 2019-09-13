@@ -19,6 +19,7 @@ type BuildingsController struct {
 // @Tags Building
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
@@ -37,6 +38,7 @@ func (this *BuildingsController) GetAll(c *gin.Context) {
 // @Tags Building
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param request body requests.BuildingStoreRequest true "Request Body"
 // @Success 201 {string} string "Created"
 // @Failure 400 {string} string "Bad Request"
@@ -63,6 +65,7 @@ func (this *BuildingsController) Store(c *gin.Context) {
 // @Tags Building
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param request body requests.BuildingUpdateRequest true "Request Body"
 // @Param buildingID path string true "Building ID" default(1)
 // @Success 200 {string} string "Ok"
@@ -91,6 +94,7 @@ func (this *BuildingsController) Update(c *gin.Context) {
 // @Tags Building
 // @Accept  json
 // @Produce  json
+// @Security ApiKeyAuth
 // @Param buildingID path string true "Building ID" default(11)
 // @Success 200 {string} string "Ok"
 // @Failure 500 {string} string "Internal Server Error"
