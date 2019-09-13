@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/ahmadkarlam-ralali/valet-parking/docs"
-	"github.com/ahmadkarlam-ralali/valet-parking/models"
 	"github.com/ahmadkarlam-ralali/valet-parking/routes"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -46,9 +45,9 @@ func main() {
 		log.Fatalf("Connection to database failed: %s", err)
 	}
 
-	if len(os.Args[1:]) > 0 && os.Args[1] == "migrate" {
-		db.AutoMigrate(&models.Slot{}, &models.User{}, &models.Transaction{}, &models.Building{})
-		log.Println("Migrate success")
+	if len(os.Args[1:]) > 0 {
+		cmd := routes.Cmd{Db: db}
+		cmd.HandleCmd()
 	} else {
 		r := routes.SetupRouter(db)
 

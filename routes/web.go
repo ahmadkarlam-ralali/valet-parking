@@ -15,6 +15,9 @@ import (
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
 	r.Use(middlewares.CORSMiddleware())
 
 	// Ping test
