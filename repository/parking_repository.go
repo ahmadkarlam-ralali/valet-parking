@@ -96,10 +96,8 @@ func (repository *ParkingRepository) GetTotalParking(Type string, Date string) [
 	switch Type {
 	case "month":
 		reports = repository.GetTotalParkingByMonth(Date)
-		break
 	case "year":
 		reports = repository.GetTotalParkingByYear(Date)
-		break
 	}
 	return reports
 }
