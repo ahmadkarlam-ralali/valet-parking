@@ -32,6 +32,12 @@ func (this *TransactionsController) Start(c *gin.Context) {
 		return
 	}
 
+	isStillParking := this.ParkingRepository.IsPlatNoStillParking(request.PlatNo)
+	if isStillParking {
+		helpers.HttpError(c, "This license number still parking", http.StatusBadRequest)
+		return
+	}
+
 	count := this.SlotRepository.GetRemainingSlotByBuildingId(request.BuildingID)
 	if count < 1 {
 		helpers.HttpError(c, "Parking full", http.StatusBadRequest)

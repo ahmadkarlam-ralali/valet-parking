@@ -71,3 +71,11 @@ func (repository *ParkingRepository) EndParking(transaction models.Transaction) 
 	repository.Db.Model(&transaction).Updates(transaction)
 	return transaction
 }
+
+func (repository *ParkingRepository) IsPlatNoStillParking(PlatNo string) bool {
+	var count int
+	repository.Db.
+		Model(&models.Transaction{}).
+		Where("plat_no = ? and end_at = '0000-00-00 00:00:00'", PlatNo).Count(&count)
+	return count > 0
+}
