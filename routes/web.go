@@ -58,6 +58,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	v1.Use(middlewares.Authenticate(db))
 	{
 		v1.POST("/buildings", buildingController.Store)
+		v1.GET("/buildings/:buildingID", buildingController.Show)
 		v1.PUT("/buildings/:buildingID", buildingController.Update)
 		v1.DELETE("/buildings/:buildingID", buildingController.Destroy)
 

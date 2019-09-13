@@ -59,6 +59,28 @@ func (this *BuildingsController) Store(c *gin.Context) {
 	})
 }
 
+// Detail Buildings godoc
+// @Summary Detail Buildings
+// @Description detail building
+// @Tags Building
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param buildingID path string true "Building ID" default(1)
+// @Success 200 {string} string "Ok"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /buildings/{buildingID}/ [get]
+func (this *BuildingsController) Show(c *gin.Context) {
+	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
+	building, _ := this.BuildingRepository.Get(uint(buildingId))
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   building,
+	})
+}
+
 // Update Buildings godoc
 // @Summary Update Buildings
 // @Description update building
