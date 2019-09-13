@@ -17,8 +17,8 @@ type ReportsController struct {
 // @Accept  json
 // @Produce  json
 // @Security ApiKeyAuth
-// @Param type query string true "type (year, month)"
-// @Param date query string true "date (2019, 2019-09)"
+// @Param type query string true "type"
+// @Param date query string true "date"
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
@@ -38,8 +38,8 @@ func (this *ReportsController) GetTotalParking(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Security ApiKeyAuth
-// @Param type query string true "type (year, month)"
-// @Param date query string true "date (2019, 2019-09)"
+// @Param type query string true "type"
+// @Param date query string true "date"
 // @Param date query string true "date"
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
