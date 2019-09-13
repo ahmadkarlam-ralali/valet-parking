@@ -22,18 +22,21 @@ func (repository *SlotRepository) Get(slotID uint) (models.Slot, error) {
 	return slot, result.Error
 }
 
-func (repository *SlotRepository) Create(buildingID uint, request requests.SlotStoreRequest) {
-	repository.Db.Create(&models.Slot{
+func (repository *SlotRepository) Create(buildingID uint, request requests.SlotStoreRequest) models.Slot {
+	slot := models.Slot{
 		Name:       request.Name,
 		BuildingID: buildingID,
 		Total:      request.Total,
-	})
+	}
+	repository.Db.Create(&slot)
+	return slot
 }
 
-func (repository *SlotRepository) Update(slot models.Slot, request requests.SlotUpdateRequest) {
+func (repository *SlotRepository) Update(slot models.Slot, request requests.SlotUpdateRequest) models.Slot {
 	slot.Name = request.Name
 	slot.Total = request.Total
 	repository.Db.Model(&slot).Updates(slot)
+	return slot
 }
 
 func (repository *SlotRepository) GetTotalSlotOccupied(slotID uint) int {

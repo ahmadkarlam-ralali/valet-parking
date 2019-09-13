@@ -63,11 +63,12 @@ func (this *SlotsController) Store(c *gin.Context) {
 		return
 	}
 
-	this.SlotRepository.Create(uint(buildingId), request)
+	slot := this.SlotRepository.Create(uint(buildingId), request)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
 		"message": "Slot created",
+		"data":    slot,
 	})
 }
 
@@ -107,11 +108,12 @@ func (this *SlotsController) Update(c *gin.Context) {
 		return
 	}
 
-	this.SlotRepository.Update(slot, request)
+	slot = this.SlotRepository.Update(slot, request)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
 		"message": "Slot updated",
+		"data":    slot,
 	})
 }
 
