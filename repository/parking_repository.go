@@ -91,11 +91,11 @@ func (repository *ParkingRepository) IsPlatNoStillParking(PlatNo string) bool {
 	return count > 0
 }
 
-func (repository *ParkingRepository) GetTotalParkingByMonth(Start string, End string) []ReportTotalParking {
+func (repository *ParkingRepository) GetTotalParkingByMonth(Date string) []ReportTotalParking {
 	var report []ReportTotalParking
 	repository.Db.Table("transactions").
 		Select("date(start_at) as 'date', count(start_at) as 'total'").
-		Where("end_at <> '0000-00-00 00:00:00' and date(start_at) between ? and ?", Start, End).
+		Where("end_at <> '0000-00-00 00:00:00' and date_format(start_at, '%Y-%m') = ?", Date).
 		Group("date(start_at)").
 		Scan(&report)
 	return report
