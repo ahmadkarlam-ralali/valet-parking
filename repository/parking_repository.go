@@ -122,6 +122,27 @@ func (repository *ParkingRepository) GetTotalParkingByMonth(Date string) []Repor
 	return report
 }
 
+func (repository *ParkingRepository) GetTotalIncome(Type string, Date string) []ReportParking {
+	var reports []ReportParking
+	switch Type {
+	case "month":
+		reports = repository.GetTotalIncomeByMonth(Date)
+	case "year":
+		reports = repository.GetTotalIncomeByYear(Date)
+	}
+	return reports
+}
+
+func (repository *ParkingRepository) GetTotalIncomeByYear(Date string) []ReportParking {
+	var report []ReportParking
+	repository.Db.Table("transactions").
+		Select("month(start_at) as 'date', sum(total) as 'total'").
+		Where("end_at <> '0000-00-00 00:00:00' and date_format(start_at, '%Y') = ?", Date).
+		Group("month(start_at)").
+		Scan(&report)
+	return report
+}
+
 func (repository *ParkingRepository) GetTotalIncomeByMonth(Date string) []ReportParking {
 	var report []ReportParking
 	repository.Db.Table("transactions").
