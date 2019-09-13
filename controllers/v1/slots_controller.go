@@ -126,7 +126,7 @@ func (this *SlotsController) Update(c *gin.Context) {
 	slotID, _ := strconv.Atoi(c.Param("slotID"))
 	slot, err := this.SlotRepository.Get(uint(slotID))
 	if err != nil {
-		helpers.HttpError(c, "Building not found", http.StatusNotFound)
+		helpers.HttpError(c, "Slot not found", http.StatusNotFound)
 		return
 	}
 
