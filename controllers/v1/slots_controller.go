@@ -63,7 +63,11 @@ func (this *SlotsController) Store(c *gin.Context) {
 		return
 	}
 
-	slot := this.SlotRepository.Create(uint(buildingId), request)
+	slot, err := this.SlotRepository.Create(uint(buildingId), request)
+	if err != nil {
+		helpers.HttpError(c, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
@@ -137,7 +141,11 @@ func (this *SlotsController) Update(c *gin.Context) {
 		return
 	}
 
-	slot = this.SlotRepository.Update(slot, request)
+	slot, err = this.SlotRepository.Update(slot, request)
+	if err != nil {
+		helpers.HttpError(c, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",

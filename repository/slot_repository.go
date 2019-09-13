@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/ahmadkarlam-ralali/valet-parking/models"
 	"github.com/ahmadkarlam-ralali/valet-parking/requests"
 	"github.com/jinzhu/gorm"
@@ -22,21 +23,39 @@ func (repository *SlotRepository) Get(slotID uint) (models.Slot, error) {
 	return slot, result.Error
 }
 
-func (repository *SlotRepository) Create(buildingID uint, request requests.SlotStoreRequest) models.Slot {
+func (repository *SlotRepository) Create(buildingID uint, request requests.SlotStoreRequest) (models.Slot, error) {
+	var count int
+	repository.Db.
+		Model(&models.Slot{}).
+		Where("name = ? and building_id = ?", request.Name, buildingID).
+		Count(&count)
+	if count > 0 {
+		return models.Slot{}, errors.New("duplicate slot name")
+	}
+
 	slot := models.Slot{
 		Name:       request.Name,
 		BuildingID: buildingID,
 		Total:      request.Total,
 	}
 	repository.Db.Create(&slot)
-	return slot
+	return slot, nil
 }
 
-func (repository *SlotRepository) Update(slot models.Slot, request requests.SlotUpdateRequest) models.Slot {
+func (repository *SlotRepository) Update(slot models.Slot, request requests.SlotUpdateRequest) (models.Slot, error) {
+	var count int
+	repository.Db.
+		Model(&models.Slot{}).
+		Where("name = ? and building_id = ? and id <> ?", request.Name, slot.BuildingID, slot.ID).
+		Count(&count)
+	if count > 0 {
+		return models.Slot{}, errors.New("duplicate slot name")
+	}
+
 	slot.Name = request.Name
 	slot.Total = request.Total
 	repository.Db.Model(&slot).Updates(slot)
-	return slot
+	return slot, nil
 }
 
 func (repository *SlotRepository) GetTotalSlotOccupied(slotID uint) int {
