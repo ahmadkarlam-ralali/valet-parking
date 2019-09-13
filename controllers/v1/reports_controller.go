@@ -29,3 +29,23 @@ func (this *ReportsController) GetTotalParking(c *gin.Context) {
 		"data":   reports,
 	})
 }
+
+// Report total income godoc
+// @Summary Report total income
+// @Description report total income
+// @Tags Reports
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param date query string true "date"
+// @Success 200 {string} string "Ok"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /reports/total-income/ [get]
+func (this *ReportsController) GetIncomeParking(c *gin.Context) {
+	reports := this.ParkingRepository.GetTotalIncomeByMonth(c.Query("date"))
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   reports,
+	})
+}

@@ -69,6 +69,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		v1.GET("/transactions", transaction.GetAll)
 
 		v1.GET("/reports/total-parking", report.GetTotalParking)
+		v1.GET("/reports/total-income", report.GetIncomeParking)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

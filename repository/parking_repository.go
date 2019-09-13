@@ -18,7 +18,7 @@ type Parking struct {
 	TotalAvailable int
 }
 
-type ReportTotalParking struct {
+type ReportParking struct {
 	Date  time.Time `json:"date"`
 	Total int       `json:"total"`
 }
@@ -91,10 +91,20 @@ func (repository *ParkingRepository) IsPlatNoStillParking(PlatNo string) bool {
 	return count > 0
 }
 
-func (repository *ParkingRepository) GetTotalParkingByMonth(Date string) []ReportTotalParking {
-	var report []ReportTotalParking
+func (repository *ParkingRepository) GetTotalParkingByMonth(Date string) []ReportParking {
+	var report []ReportParking
 	repository.Db.Table("transactions").
 		Select("date(start_at) as 'date', count(start_at) as 'total'").
+		Where("end_at <> '0000-00-00 00:00:00' and date_format(start_at, '%Y-%m') = ?", Date).
+		Group("date(start_at)").
+		Scan(&report)
+	return report
+}
+
+func (repository *ParkingRepository) GetTotalIncomeByMonth(Date string) []ReportParking {
+	var report []ReportParking
+	repository.Db.Table("transactions").
+		Select("date(start_at) as 'date', sum(total) as 'total'").
 		Where("end_at <> '0000-00-00 00:00:00' and date_format(start_at, '%Y-%m') = ?", Date).
 		Group("date(start_at)").
 		Scan(&report)
