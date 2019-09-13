@@ -2,7 +2,7 @@ package v1
 
 import (
 	b64 "encoding/base64"
-
+	"fmt"
 	"net/http"
 
 	"github.com/ahmadkarlam-ralali/valet-parking/helpers"
@@ -18,7 +18,7 @@ type AuthController struct {
 }
 
 // Login godoc
-// @Summary Login 
+// @Summary Login
 // @Description Login : Username : admin; Password : admin
 // @Tags Auth
 // @Accept  json
@@ -45,7 +45,7 @@ func (this *AuthController) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
-		"token":  token,
+		"token":  fmt.Sprintf("Bearer %s", token),
 	})
 
 }
