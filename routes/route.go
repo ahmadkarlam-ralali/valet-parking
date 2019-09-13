@@ -36,37 +36,31 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		ParkingRepository: repository.ParkingRepository{Db: db},
 	}
 
-	transactionRoute := v1.Group("/transactions")
-	{
-		transactionRoute.POST("/start", transaction.Start)
-		transactionRoute.POST("/end", transaction.End)
-	}
-
-	buildingRoute := v1.Group("/buildings")
-	buildingRoute.GET("/", buildingController.GetAll)
-
-	slotRoute := buildingRoute.Group("/:buildingID/slots")
-	slotRoute.GET("/check", slot.Check)
-
-	// With Authentication
-	v1.Use(middlewares.Authenticate(db))
-	{
-		buildingRoute.POST("/", buildingController.Store)
-		buildingRoute.PUT("/:buildingID", buildingController.Update)
-		buildingRoute.DELETE("/:buildingID", buildingController.Destroy)
-
-		slotRoute.GET("/", slot.GetAll)
-		slotRoute.POST("/", slot.Store)
-		slotRoute.PUT("/:slotID", slot.Update)
-		slotRoute.DELETE("/:slotID", slot.Destroy)
-
-		transactionRoute.GET("/", transaction.GetAll)
-	}
-
 	authRoute := v1.Group("/auth")
 	{
 		auth := &v1Controller.AuthController{Db: db}
 		authRoute.POST("/login", auth.Login)
+	}
+
+	// Without Authentication
+	v1.GET("/buildings", buildingController.GetAll)
+	v1.GET("/buildings/:buildingID/slots/check", slot.Check)
+	v1.POST("/transactions/start", transaction.Start)
+	v1.POST("/transactions/end", transaction.End)
+
+	// With Authentication
+	v1.Use(middlewares.Authenticate(db))
+	{
+		v1.POST("/buildings", buildingController.Store)
+		v1.PUT("/buildings/:buildingID", buildingController.Update)
+		v1.DELETE("/buildings/:buildingID", buildingController.Destroy)
+
+		v1.GET("/buildings/:buildingID/slots", slot.GetAll)
+		v1.POST("/buildings/:buildingID/slots", slot.Store)
+		v1.PUT("/buildings/:buildingID/slots/:slotID", slot.Update)
+		v1.DELETE("/buildings/:buildingID/slots/:slotID", slot.Destroy)
+
+		v1.GET("/transactions", transaction.GetAll)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
