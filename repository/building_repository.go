@@ -23,17 +23,20 @@ func (repository *BuildingRepository) Get(buildingID uint) (models.Building, err
 	return building, result.Error
 }
 
-func (repository *BuildingRepository) Create(request requests.BuildingStoreRequest) {
-	repository.Db.Create(&models.Building{
+func (repository *BuildingRepository) Create(request requests.BuildingStoreRequest) models.Building {
+	building := models.Building{
 		Name: request.Name,
-	})
+	}
+	repository.Db.Create(&building)
+	return building
 }
 
-func (repository *BuildingRepository) Update(buildingID uint, request requests.BuildingUpdateRequest) {
+func (repository *BuildingRepository) Update(buildingID uint, request requests.BuildingUpdateRequest) models.Building {
 	var building models.Building
 	repository.Db.First(&building, "id = ?", buildingID)
 	building.Name = request.Name
 	repository.Db.Model(&building).Updates(building)
+	return building
 }
 
 func (repository *BuildingRepository) Delete(buildingID uint) {

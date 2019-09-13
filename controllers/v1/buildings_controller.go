@@ -50,11 +50,12 @@ func (this *BuildingsController) Store(c *gin.Context) {
 		return
 	}
 
-	this.BuildingRepository.Create(request)
+	building := this.BuildingRepository.Create(request)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
 		"message": "Building created",
+		"data":    building,
 	})
 }
 
@@ -79,11 +80,12 @@ func (this *BuildingsController) Update(c *gin.Context) {
 	}
 
 	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
-	this.BuildingRepository.Update(uint(buildingId), request)
+	building := this.BuildingRepository.Update(uint(buildingId), request)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
 		"message": "Building updated",
+		"data":    building,
 	})
 }
 
