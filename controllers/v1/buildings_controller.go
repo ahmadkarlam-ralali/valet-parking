@@ -50,7 +50,11 @@ func (this *BuildingsController) Store(c *gin.Context) {
 		return
 	}
 
-	building := this.BuildingRepository.Create(request)
+	building, err := this.BuildingRepository.Create(request)
+	if err != nil {
+		helpers.HttpError(c, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
