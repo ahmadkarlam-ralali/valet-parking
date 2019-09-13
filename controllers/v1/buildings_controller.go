@@ -19,7 +19,6 @@ type BuildingsController struct {
 // @Tags Building
 // @Accept  json
 // @Produce  json
-// @Security ApiKeyAuth
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"

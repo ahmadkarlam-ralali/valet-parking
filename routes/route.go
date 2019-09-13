@@ -24,30 +24,29 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	v1 := r.Group("/api/v1")
 
+	buildingController := &v1Controller.BuildingsController{
+		BuildingRepository: repository.BuildingRepository{Db: db},
+	}
+	slot := &v1Controller.SlotsController{
+		BuildingRepository: repository.BuildingRepository{Db: db},
+		SlotRepository:     repository.SlotRepository{Db: db},
+	}
 	buildingRoute := v1.Group("/buildings")
+	buildingRoute.GET("/", buildingController.GetAll)
+
+	slotRoute := buildingRoute.Group("/:buildingID/slots")
+	slotRoute.GET("/check", slot.Check)
+
 	buildingRoute.Use(middlewares.Authenticate(db))
 	{
-		controller := &v1Controller.BuildingsController{
-			BuildingRepository: repository.BuildingRepository{Db: db},
-		}
-		buildingRoute.GET("/", controller.GetAll)
-		buildingRoute.POST("/", controller.Store)
-		buildingRoute.PUT("/:buildingID", controller.Update)
-		buildingRoute.DELETE("/:buildingID", controller.Destroy)
+		buildingRoute.POST("/", buildingController.Store)
+		buildingRoute.PUT("/:buildingID", buildingController.Update)
+		buildingRoute.DELETE("/:buildingID", buildingController.Destroy)
 
-		slotRoute := buildingRoute.Group("/:buildingID/slots")
-		{
-			slot := &v1Controller.SlotsController{
-				BuildingRepository: repository.BuildingRepository{Db: db},
-				SlotRepository:     repository.SlotRepository{Db: db},
-			}
-			slotRoute.GET("/", slot.GetAll)
-			slotRoute.POST("/", slot.Store)
-			slotRoute.PUT("/:slotID", slot.Update)
-			slotRoute.DELETE("/:slotID", slot.Destroy)
-
-			slotRoute.GET("/check", slot.Check)
-		}
+		slotRoute.GET("/", slot.GetAll)
+		slotRoute.POST("/", slot.Store)
+		slotRoute.PUT("/:slotID", slot.Update)
+		slotRoute.DELETE("/:slotID", slot.Destroy)
 	}
 
 	transactionRoute := v1.Group("/transactions")

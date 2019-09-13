@@ -145,7 +145,6 @@ func (this *SlotsController) Destroy(c *gin.Context) {
 // @Tags Slot
 // @Accept  json
 // @Produce  json
-// @Security ApiKeyAuth
 // @Param buildingID path string true "Building ID" default(1)
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
