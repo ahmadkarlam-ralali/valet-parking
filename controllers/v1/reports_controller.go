@@ -17,13 +17,14 @@ type ReportsController struct {
 // @Accept  json
 // @Produce  json
 // @Security ApiKeyAuth
-// @Param date query string true "date"
+// @Param type query string true "type (year, month)"
+// @Param date query string true "date (2019, 2019-09)"
 // @Success 200 {string} string "Ok"
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /reports/total-parking/ [get]
 func (this *ReportsController) GetTotalParking(c *gin.Context) {
-	reports := this.ParkingRepository.GetTotalParkingByMonth(c.Query("date"))
+	reports := this.ParkingRepository.GetTotalParking(c.Query("type"), c.Query("date"))
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data":   reports,
