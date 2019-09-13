@@ -31,13 +31,25 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		BuildingRepository: repository.BuildingRepository{Db: db},
 		SlotRepository:     repository.SlotRepository{Db: db},
 	}
+	transaction := &v1Controller.TransactionsController{
+		SlotRepository:    repository.SlotRepository{Db: db},
+		ParkingRepository: repository.ParkingRepository{Db: db},
+	}
+
+	transactionRoute := v1.Group("/transactions")
+	{
+		transactionRoute.POST("/start", transaction.Start)
+		transactionRoute.POST("/end", transaction.End)
+	}
+
 	buildingRoute := v1.Group("/buildings")
 	buildingRoute.GET("/", buildingController.GetAll)
 
 	slotRoute := buildingRoute.Group("/:buildingID/slots")
 	slotRoute.GET("/check", slot.Check)
 
-	buildingRoute.Use(middlewares.Authenticate(db))
+	// With Authentication
+	v1.Use(middlewares.Authenticate(db))
 	{
 		buildingRoute.POST("/", buildingController.Store)
 		buildingRoute.PUT("/:buildingID", buildingController.Update)
@@ -47,16 +59,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		slotRoute.POST("/", slot.Store)
 		slotRoute.PUT("/:slotID", slot.Update)
 		slotRoute.DELETE("/:slotID", slot.Destroy)
-	}
 
-	transactionRoute := v1.Group("/transactions")
-	{
-		transaction := &v1Controller.TransactionsController{
-			SlotRepository:    repository.SlotRepository{Db: db},
-			ParkingRepository: repository.ParkingRepository{Db: db},
-		}
-		transactionRoute.POST("/start", transaction.Start)
-		transactionRoute.POST("/end", transaction.End)
+		transactionRoute.GET("/", transaction.GetAll)
 	}
 
 	authRoute := v1.Group("/auth")

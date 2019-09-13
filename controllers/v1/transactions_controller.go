@@ -14,6 +14,24 @@ type TransactionsController struct {
 	ParkingRepository repository.ParkingRepository
 }
 
+// List Transaction godoc
+// @Summary List Transaction
+// @Description list transaction
+// @Tags Transaction
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {string} string "Ok"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /transactions/ [get]
+func (this *TransactionsController) GetAll(c *gin.Context) {
+	transactions := this.ParkingRepository.GetAll()
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   transactions,
+	})
+}
+
 // StartParking godoc
 // @Summary Start Parking
 // @Description start parking

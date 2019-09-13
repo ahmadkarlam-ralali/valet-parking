@@ -23,6 +23,12 @@ type ParkingRepository struct {
 	Parking Parking
 }
 
+func (repository *ParkingRepository) GetAll() []models.Transaction {
+	var transactions []models.Transaction
+	repository.Db.Preload("Slot").Find(&transactions)
+	return transactions
+}
+
 func (repository *ParkingRepository) SearchParkingPlace(buildingID uint) Parking {
 	rows, _ := repository.Db.Raw("select "+
 		"s.id as slot_id, s.name as slot_name, "+
