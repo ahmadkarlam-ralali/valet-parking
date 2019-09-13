@@ -39,12 +39,21 @@ func (repository *BuildingRepository) Create(request requests.BuildingStoreReque
 	return building, nil
 }
 
-func (repository *BuildingRepository) Update(buildingID uint, request requests.BuildingUpdateRequest) models.Building {
+func (repository *BuildingRepository) Update(buildingID uint, request requests.BuildingUpdateRequest) (models.Building, error) {
+	var count int
+	repository.Db.
+		Model(&models.Building{}).
+		Where("name = ? and id <> ?", request.Name, buildingID).
+		Count(&count)
+	if count > 0 {
+		return models.Building{}, errors.New("duplicate building name")
+	}
+
 	var building models.Building
 	repository.Db.First(&building, "id = ?", buildingID)
 	building.Name = request.Name
 	repository.Db.Model(&building).Updates(building)
-	return building
+	return building, nil
 }
 
 func (repository *BuildingRepository) Delete(buildingID uint) {

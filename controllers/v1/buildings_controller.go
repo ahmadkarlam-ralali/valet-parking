@@ -106,7 +106,11 @@ func (this *BuildingsController) Update(c *gin.Context) {
 	}
 
 	buildingId, _ := strconv.Atoi(c.Param("buildingID"))
-	building := this.BuildingRepository.Update(uint(buildingId), request)
+	building, err := this.BuildingRepository.Update(uint(buildingId), request)
+	if err != nil {
+		helpers.HttpError(c, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
