@@ -133,6 +133,13 @@ func (this *SlotsController) Update(c *gin.Context) {
 func (this *SlotsController) Destroy(c *gin.Context) {
 	slotID, _ := strconv.Atoi(c.Param("slotID"))
 	buildingID, _ := strconv.Atoi(c.Param("buildingID"))
+
+	count := this.SlotRepository.GetTotalSlotOccupied(uint(slotID))
+	if count > 0 {
+		message := "Slot currently used"
+		helpers.HttpError(c, message, http.StatusBadRequest)
+		return
+	}
 	this.SlotRepository.DeleteByBuildingId(uint(slotID), uint(buildingID))
 
 	c.JSON(http.StatusOK, gin.H{
