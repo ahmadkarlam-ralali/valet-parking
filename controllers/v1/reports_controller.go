@@ -1,0 +1,30 @@
+package v1
+
+import (
+	"github.com/ahmadkarlam-ralali/valet-parking/repository"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+type ReportsController struct {
+	ParkingRepository repository.ParkingRepository
+}
+
+// Report total parking godoc
+// @Summary Report total parking
+// @Description report total parking
+// @Tags Reports
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {string} string "Ok"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /reports/total-parking/ [get]
+func (this *ReportsController) GetTotalParking(c *gin.Context) {
+	reports := this.ParkingRepository.GetTotalParkingByMonth(c.Query("start"), c.Query("end"))
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   reports,
+	})
+}

@@ -38,6 +38,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		SlotRepository:    repository.SlotRepository{Db: db},
 		ParkingRepository: repository.ParkingRepository{Db: db},
 	}
+	report := &v1Controller.ReportsController{
+		ParkingRepository: repository.ParkingRepository{Db: db},
+	}
 
 	authRoute := v1.Group("/auth")
 	{
@@ -64,6 +67,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		v1.DELETE("/buildings/:buildingID/slots/:slotID", slot.Destroy)
 
 		v1.GET("/transactions", transaction.GetAll)
+
+		v1.GET("/reports/total-parking", report.GetTotalParking)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

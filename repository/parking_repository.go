@@ -18,6 +18,11 @@ type Parking struct {
 	TotalAvailable int
 }
 
+type ReportTotalParking struct {
+	Date  time.Time `json:"date"`
+	Total int       `json:"total"`
+}
+
 type ParkingRepository struct {
 	Db      *gorm.DB
 	Parking Parking
@@ -84,4 +89,14 @@ func (repository *ParkingRepository) IsPlatNoStillParking(PlatNo string) bool {
 		Model(&models.Transaction{}).
 		Where("plat_no = ? and end_at = '0000-00-00 00:00:00'", PlatNo).Count(&count)
 	return count > 0
+}
+
+func (repository *ParkingRepository) GetTotalParkingByMonth(Start string, End string) []ReportTotalParking {
+	var report []ReportTotalParking
+	repository.Db.Table("transactions").
+		Select("date(start_at) as 'date', count(start_at) as 'total'").
+		Where("end_at <> '0000-00-00 00:00:00' and date(start_at) between ? and ?", Start, End).
+		Group("date(start_at)").
+		Scan(&report)
+	return report
 }
