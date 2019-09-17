@@ -19,7 +19,15 @@ func init() {
 	viper.SetConfigFile("config.json")
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(err)
+		viper.SetDefault("database.hostname", "")
+		viper.SetDefault("database.username", "")
+		viper.SetDefault("database.password", "")
+		viper.SetDefault("database.name", "")
+		viper.SetDefault("database.port", "")
+		viper.SetDefault("app.port", "9000")
+		viper.SetDefault("app.env", "production")
+		viper.SetDefault("app.env", "production")
+		viper.SetDefault("swagger.host", "https://valet-parking-go.herokuapp.com")
 	}
 }
 
@@ -30,7 +38,7 @@ func main() {
 	docs.SwaggerInfo.Version = "0.1"
 	docs.SwaggerInfo.Host = ""
 	docs.SwaggerInfo.BasePath = "/api/v1/"
-	docs.SwaggerInfo.Host = "192.168.40.94:9000"
+	docs.SwaggerInfo.Host = viper.GetString("swagger.host")
 
 	dbHostname := viper.GetString("database.hostname")
 	dbUsername := viper.GetString("database.username")

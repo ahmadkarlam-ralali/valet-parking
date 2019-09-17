@@ -3,6 +3,9 @@
     "port": "9000",
     "env": "production"
   },
+  "swagger": {
+    "host": "192.168.40.94:9000"
+  },
   "database": {
     "hostname": "127.0.0.1",
     "username": "root",
