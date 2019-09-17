@@ -52,8 +52,13 @@ func main() {
 		r := routes.SetupRouter(db)
 
 		port := viper.GetString("app.port")
+		env := viper.GetString("app.env")
 
-		_ = r.Run(fmt.Sprintf(":%s", port))
+		if env == "production" {
+			_ = r.Run(fmt.Sprintf(":%s", "80"))
+		} else {
+			_ = r.Run(fmt.Sprintf(":%s", port))
+		}
 	}
 
 	defer db.Close()
