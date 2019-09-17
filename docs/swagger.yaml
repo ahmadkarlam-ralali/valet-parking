@@ -1,0 +1,642 @@
+definitions:
+  requests.AuthLoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  requests.BuildingStoreRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  requests.BuildingUpdateRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  requests.SlotStoreRequest:
+    properties:
+      name:
+        type: string
+      total:
+        type: integer
+    required:
+    - name
+    - total
+    type: object
+  requests.SlotUpdateRequest:
+    properties:
+      name:
+        type: string
+      total:
+        type: integer
+    required:
+    - name
+    - total
+    type: object
+  requests.TransactionEndRequest:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  requests.TransactionStartRequest:
+    properties:
+      building_id:
+        type: integer
+      plat_no:
+        type: string
+    required:
+    - building_id
+    - plat_no
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /auth/login/:
+    post:
+      consumes:
+      - application/json
+      description: 'Login : Username : admin; Password : admin'
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.AuthLoginRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "404":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Login
+      tags:
+      - Auth
+  /buildings/:
+    get:
+      consumes:
+      - application/json
+      description: list building
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: List Buildings
+      tags:
+      - Building
+    post:
+      consumes:
+      - application/json
+      description: create building
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.BuildingStoreRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create Buildings
+      tags:
+      - Building
+  /buildings/{buildingID}/:
+    delete:
+      consumes:
+      - application/json
+      description: delete building
+      parameters:
+      - default: "11"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Buildings
+      tags:
+      - Building
+    get:
+      consumes:
+      - application/json
+      description: detail building
+      parameters:
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Detail Buildings
+      tags:
+      - Building
+    put:
+      consumes:
+      - application/json
+      description: update building
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.BuildingUpdateRequest'
+          type: object
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update Buildings
+      tags:
+      - Building
+  /buildings/{buildingID}/check/:
+    get:
+      consumes:
+      - application/json
+      description: check slot by building
+      parameters:
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Check Slot by Building
+      tags:
+      - Slot
+  /buildings/{buildingID}/slots/:
+    get:
+      consumes:
+      - application/json
+      description: list slot by building
+      parameters:
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: List Slot by Building
+      tags:
+      - Slot
+    post:
+      consumes:
+      - application/json
+      description: create slot by building
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.SlotStoreRequest'
+          type: object
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create Slot by Building
+      tags:
+      - Slot
+  /buildings/{buildingID}/slots/{slotID}/:
+    delete:
+      consumes:
+      - application/json
+      description: delete slot by building
+      parameters:
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      - default: "1"
+        description: Slot ID
+        in: path
+        name: slotID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Slot by Building
+      tags:
+      - Slot
+    get:
+      consumes:
+      - application/json
+      description: show slot by building
+      parameters:
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      - default: "1"
+        description: Slot ID
+        in: path
+        name: slotID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Show Slot by Building
+      tags:
+      - Slot
+    put:
+      consumes:
+      - application/json
+      description: update slot by building
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.SlotUpdateRequest'
+          type: object
+      - default: "1"
+        description: Building ID
+        in: path
+        name: buildingID
+        required: true
+        type: string
+      - default: "1"
+        description: Slot ID
+        in: path
+        name: slotID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update Slot by Building
+      tags:
+      - Slot
+  /reports/total-income/:
+    get:
+      consumes:
+      - application/json
+      description: report total income
+      parameters:
+      - description: type
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: date
+        in: query
+        name: date
+        required: true
+        type: string
+      - description: date
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Report total income
+      tags:
+      - Reports
+  /reports/total-parking/:
+    get:
+      consumes:
+      - application/json
+      description: report total parking
+      parameters:
+      - description: type
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: date
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Report total parking
+      tags:
+      - Reports
+  /transactions/:
+    get:
+      consumes:
+      - application/json
+      description: list transaction
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: List Transaction
+      tags:
+      - Transaction
+  /transactions/end/:
+    post:
+      consumes:
+      - application/json
+      description: end parking
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.TransactionEndRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: End Parking
+      tags:
+      - Transaction
+  /transactions/start/:
+    post:
+      consumes:
+      - application/json
+      description: start parking
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.TransactionStartRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Start Parking
+      tags:
+      - Transaction
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
