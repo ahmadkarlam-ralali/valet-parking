@@ -1,6 +1,6 @@
 [metadata.heroku]
   root-package = "github.com/ahmadkarlam-ralali/valet-parking"
-  go-version = "1.9"
+  go-version = "1.12"
   install = [ "./..." ]
 
 [prune]
